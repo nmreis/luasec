@@ -1,0 +1,47 @@
+--- a/Makefile
++++ b/Makefile
+@@ -32,13 +32,13 @@ none:
+ 	@echo "  * macosx"
+ 
+ install:
+-	@cd src && $(MAKE) LUACPATH="$(LUACPATH)" LUAPATH="$(LUAPATH)" install
++	cd src && $(MAKE) LUACPATH="$(LUACPATH)" LUAPATH="$(LUAPATH)" install
+ 
+ linux:
+-	@echo "---------------------"
+-	@echo "** Build for Linux **"
+-	@echo "---------------------"
+-	@cd src && $(MAKE) INCDIR="$(INCDIR)" LIBDIR="$(LIBDIR)" DEFS="$(DEFS)" EXTRA="$(EXTRA)" $@
++	echo "---------------------"
++	echo "** Build for Linux **"
++	echo "---------------------"
++	cd src && $(MAKE) INCDIR="$(INCDIR)" LIBDIR="$(LIBDIR)" DEFS="$(DEFS)" EXTRA="$(EXTRA)" $@
+ 
+ bsd:
+ 	@echo "-------------------"
+@@ -53,4 +53,4 @@ macosx:
+ 	@cd src && $(MAKE) INCDIR="$(INCDIR)" LIBDIR="$(LIBDIR)" MACVER="$(MACOSX_VERSION)" DEFS="$(DEFS)" EXTRA="$(EXTRA)" $@
+ 
+ clean:
+-	@cd src && $(MAKE) clean
++	cd src && $(MAKE) clean
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -38,7 +38,7 @@ install: $(CMOD) $(LMOD)
+ 	$(INSTALL) -m644 -D https.lua $(DESTDIR)$(LUAPATH)/ssl
+ 
+ linux:
+-	@$(MAKE) $(CMOD) MYCFLAGS="$(LNX_CFLAGS)" MYLDFLAGS="$(LNX_LDFLAGS)" EXTRA="$(EXTRA)"
++	$(MAKE) $(CMOD) MYCFLAGS="$(LNX_CFLAGS)" MYLDFLAGS="$(LNX_LDFLAGS)" EXTRA="$(EXTRA)"
+ 
+ bsd:
+ 	@$(MAKE) $(CMOD) MYCFLAGS="$(BSD_CFLAGS)" MYLDFLAGS="$(BSD_LDFLAGS)" EXTRA="$(EXTRA)"
+@@ -47,7 +47,7 @@ macosx:
+ 	@$(MAKE) $(CMOD) MYCFLAGS="$(MAC_CFLAGS)" MYLDFLAGS="$(MAC_LDFLAGS)" MYENV="$(MAC_ENV)" EXTRA="$(EXTRA)"
+ 
+ luasocket:
+-	@cd luasocket && $(MAKE)
++	cd luasocket && $(MAKE)
+ 
+ $(CMOD): $(EXTRA) $(OBJS)
+ 	$(LD) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
