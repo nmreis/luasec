@@ -1,13 +1,6 @@
-%if 0%{?fedora} >= 20 || 0%{?rhel} > 7
 %define luaver 5.2
-%else
-%define luaver 5.1
-%endif
 
-%define luacompatver 5.1
-%define luacompatlibdir %{_libdir}/lua/%{luacompatver}
-%define luacompatpkgdir %{_datadir}/lua/%{luacompatver}
-%define lua51dir %{_builddir}/lua51-%{name}-%{version}-%{release}
+%define lua52dir %{_builddir}/lua52-%{name}-%{version}-%{release}
 
 %global lualibdir %{_libdir}/lua/%{luaver}
 %global luapkgdir %{_datadir}/lua/%{luaver}
@@ -25,34 +18,15 @@ URL:            https://github.com/brunoos/luasec
 Source0:        https://github.com/brunoos/luasec/archive/%{real_name}-%{version}.tar.gz
 Patch0:         lua-sec-0.4.1-fix-Makefile.patch
 
-BuildRequires:  lua-devel
+BuildRequires:  lua52-devel
 BuildRequires:  openssl-devel
-Requires:       lua-socket
-%if 0%{?fedora} >= 16 || 0%{?rhel} >= 7
-Requires: lua(abi) = %{luaver}
-%else
-Requires: lua >= %{luaver}
-%endif
-
-%if 0%{?fedora} >= 20
-BuildRequires:  compat-lua >= %{luacompatver}, compat-lua-devel >= %{luacompatver}
-%endif
+Requires:       luasocket
+Requires: lua52 >= %{luaver}
 
 %description
 Lua binding for OpenSSL library to provide TLS/SSL communication.
 It takes an already established TCP connection and creates a secure
 session between the peers.
-
-%if 0%{?fedora} >= 20
-%package compat
-Summary:        Lua 5.1 binding for OpenSSL library
-Group:          Development/Libraries
-
-%description compat
-Lua 5.1 binding for OpenSSL library to provide TLS/SSL communication.
-It takes an already established TCP connection and creates a secure
-session between the peers.
-%endif
 
 %prep
 %setup -q -n %{real_name}-%{real_name}-%{version}
@@ -64,23 +38,10 @@ for file in CHANGELOG LICENSE; do
     mv $file.new $file
 done
 
-%if 0%{?fedora} >= 20
-rm -rf %{lua51dir}
-cp -a . %{lua51dir}
-%endif
-
 %build
 make %{?_smp_mflags} CFLAGS="$RPM_OPT_FLAGS -fPIC -I. -I%{_includedir} -DWITH_LUASOCKET -DLUASOCKET_DEBUG" \
     LD="gcc -shared" LDFLAGS="-O -fPIC -shared -L./luasocket" \
     linux
-
-%if 0%{?fedora} >= 20
-pushd %{lua51dir}
-make %{?_smp_mflags} CFLAGS="$RPM_OPT_FLAGS -fPIC -I. -I%{_includedir}/lua-%{luacompatver} -DWITH_LUASOCKET -DLUASOCKET_DEBUG" \
-    LD="gcc -shared" LDFLAGS="-O -fPIC -shared -L./luasocket" \
-    linux
-popd
-%endif
 
 %install
 mkdir -p $RPM_BUILD_ROOT%{luapkgdir}
@@ -89,17 +50,6 @@ make install DESTDIR=$RPM_BUILD_ROOT \
     CFLAGS="$RPM_OPT_FLAGS -fPIC -I. -I%{_includedir}/lua-%{luaver} -DWITH_LUASOCKET -DLUASOCKET_DEBUG" \
     LUAPATH=%{luapkgdir} \
     LUACPATH=%{lualibdir}
-
-%if 0%{?fedora} >= 20
-pushd %{lua51dir}
-mkdir -p $RPM_BUILD_ROOT%{luacompatpkgdir}
-mkdir -p $RPM_BUILD_ROOT%{luacompatlibdir}
-make install DESTDIR=$RPM_BUILD_ROOT \
-    CFLAGS="$RPM_OPT_FLAGS -fPIC -I. -I%{_includedir}/lua-%{luacompatver} -DWITH_LUASOCKET -DLUASOCKET_DEBUG" \
-    LUAPATH=%{luacompatpkgdir} \
-    LUACPATH=%{luacompatlibdir}
-popd
-%endif
 
 
 %files
@@ -110,15 +60,6 @@ popd
 %dir %{luapkgdir}/ssl
 %{luapkgdir}/ssl/*
 
-%if 0%{?fedora} >= 20
-%files compat
-%defattr(-,root,root,-)
-%doc CHANGELOG LICENSE
-%{luacompatlibdir}/ssl.so
-%{luacompatpkgdir}/ssl.lua
-%dir %{luacompatpkgdir}/ssl
-%{luacompatpkgdir}/ssl/*
-%endif
 
 %changelog
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.5-3

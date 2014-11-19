@@ -4,11 +4,11 @@
 --
 ------------------------------------------------------------------------------
 
+local ssl = {}
+
 local core    = require("ssl.core")
 local context = require("ssl.context")
 local x509    = require("ssl.x509")
-
-module("ssl", package.seeall)
 
 _VERSION   = "0.5.PR"
 _COPYRIGHT = core.copyright()
@@ -33,6 +33,7 @@ local function optexec(func, param, ctx)
   end
   return true
 end
+ssl.optexec = optexec
 
 --
 --
@@ -107,6 +108,7 @@ function newcontext(cfg)
 
    return ctx
 end
+ssl.newcontext = newcontext
 
 --
 --
@@ -128,6 +130,7 @@ function wrap(sock, cfg)
    end
    return nil, msg 
 end
+ssl.wrap = wrap
 
 --
 -- Extract connection information.
@@ -160,9 +163,11 @@ local function info(ssl, field)
   -- Empty?
   return ( (next(info)) and info )
 end
+ssl.info = info
 
 --
 -- Set method for SSL connections.
 --
 core.setmethod("info", info)
 
+return ssl
