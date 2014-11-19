@@ -29,7 +29,7 @@ It takes an already established TCP connection and creates a secure
 session between the peers.
 
 %prep
-%setup -q -n %{real_name}-%{real_name}-%{version}
+%setup -q -n %{real_name}-%{version}
 %patch0 -p1 -b .fixMakefile
 
 for file in CHANGELOG LICENSE; do
